@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include <chrono>
 
 using namespace std;
 
@@ -51,7 +50,8 @@ int main ()
         {
             cout << "\nWould you like to continue? Press: 1 for Yes, Press: 2 for No: ";
             cin >> gameOver;
-            cout << "\n\n";
+            system("CLS");
+            cout << "";
             while(gameOver != 1 && gameOver != 2)
             {
                 cout << "\n!!Not a valid menu option!! Please enter a valid number: ";
@@ -186,13 +186,11 @@ void game()
     }
     else if(option == 2)
     {
-        cout << "\nLets begin!!\n";
+        system("CLS");
+        cout << "Lets begin!!\n";
+
         createDeck();
         shuffleDeck();
-//        shoe.position = 0;
-//        player.position = 0;
-//        dealer.position = 0;
-
 
         dealDealerCard();
         dealPlayerCard();
