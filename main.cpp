@@ -1,39 +1,37 @@
-#include <iostream>
+include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <chrono>
 
 using namespace std;
 
-struct Card {
+struct Card {       //Declares struct with members that will hold point value, suit, and card rank
     string value;
     string suit;
     int point;
 };
 
-struct Blackjack {
-    int playertotal,
-        dealertotal,
-        position;
-    bool stand;
+struct Blackjack {      //Declares struct with members that will hold values related to the player and dealer hands as well as the deck.
+    int dealertotal,
+        playertotal,    //Total is to hold the sum of the player and dealers hands.
+        position;       //Position is to hold hold the position in a deck as it is incremented through dealing cards and summing the hands.
+    bool stand;         //Stand is a boolean to determine if the player or dealer has stopped drawing cards.
 };
 
-const int valueSize = 13,
-          suitSize = 4,
-          numDecks = 6,
-          deckMax = 312,
-          playerHandSize = 11,
-          dealerHandSize = 11;
+const int valueSize = 13, //Int corresponding to the number of ranks in a single deck of cards.
+          suitSize = 4,   //Int corresponding to the number of suits in a deck of cards.
+          numDecks = 6,   //Int that determines how many decks will be created.
+          deckMax = 312,  //Determines the number of elements that the deck array will be able to hold.
+          handSize = 11;  //Max number of elements allowed in the player and dealer hand arrays.
 
-string values[valueSize] = {"Ace", "2", "3", "4","5", "6", "7","8","9", "10", "Jack", "Queen", "King" },
-       suits[suitSize] = {"Diamonds","Hearts","Spades","Clubs"};
+string values[valueSize] = {"Ace", "2", "3", "4","5", "6", "7","8","9", "10", "Jack", "Queen", "King" },    //array of strings holding card ranks to be passed to an array of structures when creating the decks.
+       suits[suitSize] = {"Diamonds","Hearts","Spades","Clubs"};                                            //array of strings holding card suits also to be passed to an array of structures when creating the decks.
 
-int points[valueSize] = {11,2,3,4,5,6,7,8,9,10,10,10,10};
+int points[valueSize] = {11,2,3,4,5,6,7,8,9,10,10,10,10};                                                   //array of ints holding points values for cards.
 
-Card deck[deckMax], playerHand[playerHandSize], dealerHand[dealerHandSize];
-Blackjack dealer, player, shoe;
+Card deck[deckMax], playerHand[handSize], dealerHand[handSize]; //Declaring arrays that will structure members from the Card struct. One for the deck, players hand, and dealers hand with corresponding sizes
+Blackjack dealer, player, shoe;                                 //Declaring Blackjack structure for the dealer, player, and deck/shoe
 
-
-void gameMenu();
 void createDeck();
 void shuffleDeck();
 void printDeck();
@@ -41,8 +39,6 @@ void dealDealerCard();
 void dealPlayerCard();
 void showDealerHand();
 void showPlayerHand();
-int dealerTotal();
-int playerTotal();
 void game();
 
 int main ()
@@ -53,8 +49,14 @@ int main ()
     {
         game();
         {
-            cout << "\nWould you like to play again? Press: 1 for Yes, Press: 2 for No\n";
+            cout << "\nWould you like to continue? Press: 1 for Yes, Press: 2 for No: ";
             cin >> gameOver;
+            cout << "\n\n";
+            while(gameOver != 1 && gameOver != 2)
+            {
+                cout << "\n!!Not a valid menu option!! Please enter a valid number: ";
+                cin >> gameOver;
+            }
         }
     }while (gameOver == 1);
 
@@ -64,7 +66,7 @@ int main ()
 void createDeck()
 {
     int k = 0;
-    int p = 0;
+    int p;
 
     for(p = 0; p < numDecks; p++)
     {
@@ -146,7 +148,12 @@ void showPlayerHand()
 
 void game()
 {
-    int option, hit;
+    int option = 0, hit = 0;
+    player.stand = false;
+    dealer.stand = false;
+    shoe.position = 0;
+    player.position = 0;
+    dealer.position = 0;
 
     cout << "**Welcome to Kardiac Kid Casino's Game of Black Jack!!**\n";
     cout << "          Please choose and option below\n";
@@ -155,6 +162,12 @@ void game()
     cout << "          --->To leave press: 3\n";
     cout << "          Enter your choice: ";
     cin >> option;
+
+    while(option != 1 && option != 2 && option != 3)
+        {
+            cout << "\n!!Not a valid menu option!! Please enter a valid number: ";
+            cin >> option;
+        }
 
     if (option == 1)
     {
@@ -176,9 +189,9 @@ void game()
         cout << "\nLets begin!!\n";
         createDeck();
         shuffleDeck();
-        shoe.position = 0;
-        player.position = 0;
-        dealer.position = 0;
+//        shoe.position = 0;
+//        player.position = 0;
+//        dealer.position = 0;
 
 
         dealDealerCard();
@@ -202,7 +215,7 @@ void game()
         {
             if(player.stand == false)
             {
-                cout << "\nPlayer, would you like to hit? Press: 1 for Yes, Press: 2 for No.\n";
+                cout << "\nPlayer, would you like to hit? Press: 1 for Yes, Press: 2 for No: ";
                 cin >> hit;
 
                 if (hit == 1)
@@ -212,13 +225,14 @@ void game()
 
                     if(player.playertotal > 21)
                     {
-                        cout << "Bust!! Player loses!!\n";
+                        cout << "\nBust!! Player loses!!\n";
                         return;
                     }
                 }
+
                 if(hit == 2)
                 {
-                    cout << "Player stands.\n";
+                    cout << "\nPlayer stands.\n";
                     player.stand = true;
                 }
             }
@@ -229,7 +243,7 @@ void game()
 
                 if (dealer.dealertotal > 21)
                 {
-                    cout << "Bust!! Dealer Loses.\n";
+                    cout << "\nBust!! Dealer Loses.\n";
                     return;
                 }
             }
@@ -256,17 +270,19 @@ void game()
             {
                 if(dealer.dealertotal < player.playertotal)
                 {
-                    cout << "\nPlayer Wins!!";
+                    cout << "\nPlayer Wins!!\n";
                     return;
                 }
                 else if (player.playertotal == dealer.dealertotal)
                 {
-                    cout << "\nTie!!";
+                    cout << "\nTie!!\n";
                     return;
                 }
                 else if (dealer.dealertotal > player.playertotal)
                 {
-                    cout << "\nDealer Wins!!";
+                    cout << "\nDealer Wins!!\n";shoe.position = 0;
+        player.position = 0;
+        dealer.position = 0;
                     return;
                 }
             }
@@ -274,7 +290,6 @@ void game()
     }
     else if(option == 3)
     {
-        cout << "\nThanks for playing!!";
+        return;
     }
 }
-
